@@ -1,0 +1,14 @@
+{
+	"files.associations": {
+		"__threading_support": "c",
+		"mutex": "c",
+		"__availability": "c",
+		"__mutex_base": "c",
+		"atomic": "c",
+		"condition_variable": "c",
+		"memory": "c",
+		"*.tcc": "c",
+		"ostream": "c",
+		"stop_token": "c"
+	}
+}
