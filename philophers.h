@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:36:32 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/08/11 14:33:32 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/08/11 15:26:48 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@
 #include <sys/time.h> // gettimeofday
 #include <unistd.h>   // sleep
 #include <pthread.h> // pthread
+
+# define TRUE 1
+# define FALSE 0
 
 typedef struct s_fork
 {
@@ -32,7 +35,6 @@ typedef struct s_philosopher
 	int				time_to_die;
 	long long		started_eating_at;
 	long long		started_sleeping_at;
-	long long		last_meal_at;
 	int				meals_eaten;
 	int				meals_goal;
 	int				holding_left_fork;
