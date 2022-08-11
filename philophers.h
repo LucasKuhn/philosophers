@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:36:32 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/08/09 19:00:22 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/08/11 14:33:32 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ typedef struct s_philosopher
 	int				meals_goal;
 	int				holding_left_fork;
 	int				holding_right_fork;
-	t_fork			left_fork;
-	t_fork			right_fork;
+	t_fork			*left_fork;
+	t_fork			*right_fork;
 	pthread_t		thread;
 }					t_philosopher;
 
