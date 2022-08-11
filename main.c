@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:20:21 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/08/11 15:33:25 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/08/11 15:52:03 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,9 @@ char *readable_state(t_philosopher *philosopher)
 		return ("UNKNOWN");
 }
 
-static void	display_log(t_philosopher **philosophers)
+void	*display_log(void *arg)
 {
+	t_philosopher	**philosophers = (t_philosopher **)arg;
 	long long	timestamp;
 	int			i;
 	int nobody_died = TRUE;
@@ -98,6 +99,7 @@ static void	display_log(t_philosopher **philosophers)
 		fflush(stdout);
 		usleep(1000 * 100);
 	}
+	return (NULL);
 }
 
 void	init_philosopher(t_philosopher *philosopher, const char **argv)
@@ -267,6 +269,8 @@ int	main(int argc, char const *argv[])
 		return (1);
 	philosophers = init_philosophers(argv);
 	pthread_t simulation_thread; 
+	pthread_t display_thread; 
 	pthread_create(&simulation_thread, NULL, run_simulation, philosophers);
-	display_log(philosophers);
+	pthread_create(&display_thread, NULL, display_log, philosophers);
+	pthread_join(display_thread, NULL);
 }
