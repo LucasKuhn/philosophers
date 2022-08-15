@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:36:32 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/08/11 15:26:48 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/08/11 17:18:02 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ typedef struct s_fork
 typedef struct s_philosopher
 {
 	char			*name;
+	int				id;
 	int				state;
 	int				time_to_eat;
 	int				time_to_sleep;
