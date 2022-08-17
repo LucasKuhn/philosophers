@@ -6,12 +6,11 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:20:21 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/08/12 18:36:09 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/08/17 17:20:21 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philophers.h"
-
 
 int	is_thinking(t_philosopher *philosopher)
 {
@@ -34,11 +33,11 @@ int	is_dead(t_philosopher *philosopher)
 }
 
 // https://stackoverflow.com/questions/3756323/how-to-get-the-current-time-in-milliseconds-from-c-in-linux
-long long	get_timestamp(void)
+int	get_timestamp(void)
 {
-	struct timeval		tv;
-	long long			timestamp;
-	static long long	start_time;
+	struct timeval	tv;
+	int				timestamp;
+	static int		start_time;
 
 	gettimeofday(&tv, NULL);
 	if (!start_time)
@@ -47,61 +46,64 @@ long long	get_timestamp(void)
 	return (timestamp - start_time);
 }
 
-int has_left_fork(t_philosopher *philosopher)
+int	has_left_fork(t_philosopher *philosopher)
 {
 	return (philosopher->holding_left_fork);
 }
 
-int has_right_fork(t_philosopher *philosopher)
+int	has_right_fork(t_philosopher *philosopher)
 {
 	return (philosopher->holding_right_fork);
 }
-
-char *readable_state(t_philosopher *philosopher)
+char	*readable_state(t_philosopher *philosopher)
 {
+	// if (is_dead(philosopher))
+	// 	return ("died                 ☠️");
+	// if (is_eating(philosopher))
+	// 	return ("is eating          🍴😋🍴");
+	// if (has_left_fork(philosopher))
+	// 	return ("has taken a fork   🍴😬");
+	// if (has_right_fork(philosopher))
+	// 	return ("has taken a fork     😬🍴");
+	// if (is_thinking(philosopher))
+	// 	return ("is thinking          🤔");
+	// if (is_sleeping(philosopher))
+	// 	return ("is sleeping          😴");
+	// else
+	// 	return ("UNKNOWN");
 	if (is_dead(philosopher))
-		return ("died                 ☠️");
+		return ("died");
 	if (is_eating(philosopher))
-		return ("is eating          🍴😋🍴");
+		return ("is eating");
 	if (has_left_fork(philosopher))
-		return ("has taken a fork   🍴😬");
+		return ("has taken a fork");
 	if (has_right_fork(philosopher))
-		return ("has taken a fork     😬🍴");
+		return ("has taken a fork");
 	if (is_thinking(philosopher))
-		return ("is thinking          🤔");
+		return ("is thinking");
 	if (is_sleeping(philosopher))
-		return ("is sleeping          😴");
+		return ("is sleeping");
 	else
 		return ("UNKNOWN");
 }
 
-// char *readable_state(t_philosopher *philosopher)
-// {
-// 	if (is_dead(philosopher))
-// 		return ("died");
-// 	if (is_eating(philosopher))
-// 		return ("is eating");
-// 	if (has_left_fork(philosopher))
-// 		return ("has taken a fork");
-// 	if (has_right_fork(philosopher))
-// 		return ("has taken a fork");
-// 	if (is_thinking(philosopher))
-// 		return ("is thinking");
-// 	if (is_sleeping(philosopher))
-// 		return ("is sleeping");
-// 	else
-// 		return ("UNKNOWN");
-// }
-
+void	print_state(t_philosopher *philosopher, int timestamp)
+{
+	printf("%d %d %s\n",
+			timestamp,
+			philosopher->id,
+			readable_state(philosopher));
+}
 
 void	*display_log(void *arg)
 {
-	t_philosopher	**philosophers = (t_philosopher **)arg;
-	long long	timestamp;
-	int			i;
-	int nobody_died = TRUE;
+	t_philosopher	**philosophers;
+	int				timestamp;
+	int				i;
+	int				nobody_died;
 
-
+	philosophers = (t_philosopher **)arg;
+	nobody_died = TRUE;
 	while (nobody_died)
 	{
 		i = 0;
@@ -111,13 +113,8 @@ void	*display_log(void *arg)
 		while (philosophers[i])
 		{
 			timestamp = get_timestamp();
-				printf("%lld %d %s\v\r", timestamp,
-					philosophers[i]->id, 
+			printf("%d %d %s\v\r", timestamp, philosophers[i]->id,
 					readable_state(philosophers[i]));
-				// if (philosophers[i]->holding_left_fork)
-				// 	printf("Holding left  fork: %p\v\r", philosophers[i]->left_fork);
-				// if (philosophers[i]->holding_right_fork)
-				// 	printf("Holding right fork: %p\v\r", philosophers[i]->right_fork);
 			if (is_dead(philosophers[i]))
 				nobody_died = FALSE;
 			i++;
@@ -134,20 +131,19 @@ void	init_philosopher(t_philosopher *philosopher, const char **argv)
 	philosopher->time_to_die = atoi(argv[2]);
 	philosopher->time_to_eat = atoi(argv[3]);
 	philosopher->time_to_sleep = atoi(argv[4]);
-	philosopher->started_eating_at = get_timestamp();
+	philosopher->started_state_at = get_timestamp();
 	philosopher->meals_eaten = 0;
 	if (argv[5])
 		philosopher->meals_goal = atoi(argv[5]);
 	else
-		philosopher->meals_goal = 999;
+		philosopher->meals_goal = INT_MAX;
 }
 
 void	name_philosopher(t_philosopher *philosopher, int i)
 {
-	const char	*names[22];
+	const char	*names[21];
 
 	philosopher->id = i;
-	i = i % 22;
 	names[0] = "Plato";
 	names[1] = "Aristotle";
 	names[2] = "Pythagoras";
@@ -169,14 +165,14 @@ void	name_philosopher(t_philosopher *philosopher, int i)
 	names[18] = "Thucydides";
 	names[19] = "Arcesilaus";
 	names[20] = "Posidonius";
-	names[21] = "Galen";
-	philosopher->name = strdup(names[i]);
+	philosopher->name = strdup(names[i % 21]);
 }
 
 t_philosopher	**init_philosophers(const char **argv)
 {
 	t_philosopher	**philosophers;
 	int				i;
+	t_fork			*fork;
 
 	philosophers = malloc(sizeof(t_philosopher *) * atoi(argv[1]));
 	i = 0;
@@ -185,20 +181,19 @@ t_philosopher	**init_philosophers(const char **argv)
 		philosophers[i] = malloc(sizeof(t_philosopher));
 		init_philosopher(philosophers[i], argv);
 		name_philosopher(philosophers[i], i);
-		t_fork *fork;
 		fork = malloc(sizeof(t_fork));
 		philosophers[i]->right_fork = fork;
 		pthread_mutex_init(&philosophers[i]->right_fork->lock, NULL);
-		if ( i >= 1 )
+		if (i >= 1)
 			philosophers[i]->left_fork = philosophers[i - 1]->right_fork;
 		i++;
 	}
-	philosophers[0]->left_fork = philosophers[i-1]->right_fork;
+	philosophers[0]->left_fork = philosophers[i - 1]->right_fork;
 	philosophers[i] = NULL;
 	return (philosophers);
 }
 
-void drop_left_fork(t_philosopher	*philosopher)
+void	drop_left_fork(t_philosopher *philosopher)
 {
 	pthread_mutex_lock(&philosopher->left_fork->lock);
 	philosopher->holding_left_fork = FALSE;
@@ -206,7 +201,7 @@ void drop_left_fork(t_philosopher	*philosopher)
 	pthread_mutex_unlock(&philosopher->left_fork->lock);
 }
 
-void drop_right_fork(t_philosopher	*philosopher)
+void	drop_right_fork(t_philosopher *philosopher)
 {
 	pthread_mutex_lock(&philosopher->right_fork->lock);
 	philosopher->holding_right_fork = FALSE;
@@ -214,92 +209,110 @@ void drop_right_fork(t_philosopher	*philosopher)
 	pthread_mutex_unlock(&philosopher->right_fork->lock);
 }
 
-void try_left_fork(t_philosopher *philosopher)
+void	try_left_fork(t_philosopher *philosopher)
 {
 	pthread_mutex_lock(&philosopher->right_fork->lock);
 	if (philosopher->left_fork->locked == FALSE)
 		philosopher->holding_left_fork = TRUE;
-		philosopher->left_fork->locked = TRUE;
+	philosopher->left_fork->locked = TRUE;
 	pthread_mutex_unlock(&philosopher->right_fork->lock);
 }
 
-void try_right_fork(t_philosopher *philosopher)
+void	try_right_fork(t_philosopher *philosopher)
 {
 	pthread_mutex_lock(&philosopher->left_fork->lock);
 	if (philosopher->right_fork->locked == FALSE)
 		philosopher->holding_right_fork = TRUE;
-		philosopher->right_fork->locked = TRUE;
+	philosopher->right_fork->locked = TRUE;
 	pthread_mutex_unlock(&philosopher->left_fork->lock);
 }
 
-int has_both_forks(t_philosopher	*philosopher)
+int	has_both_forks(t_philosopher *philosopher)
 {
 	return (philosopher->holding_left_fork && philosopher->holding_right_fork);
 }
 
-int is_satisfied(t_philosopher *philosopher)
+int	is_satisfied(t_philosopher *philosopher)
 {
 	return (philosopher->meals_eaten >= philosopher->meals_goal);
 }
 
-
-void update_state(t_philosopher	*philosopher)
+void	set_state(t_philosopher *philosopher, t_states new_state, int timestamp)
 {
-	long long timestamp;
-	
-	timestamp = get_timestamp();
-	if (philosopher->started_eating_at + philosopher->time_to_die < timestamp )
+	philosopher->state = new_state;
+	philosopher->started_state_at = timestamp;
+	print_state(philosopher, timestamp);
+}
+
+int	should_die(t_philosopher *philosopher, int timestamp)
+{
+	return (timestamp
+			- philosopher->started_state_at >= philosopher->time_to_die);
+}
+
+int	done_eating(t_philosopher *philosopher, int timestamp)
+{
+	return (timestamp
+			- philosopher->started_state_at >= philosopher->time_to_eat);
+}
+
+void	pick_a_fork(t_philosopher *philosopher)
+{
+	if (philosopher->id % 2 == 0)
 	{
-		philosopher->state = DEAD;
-		return ;
-	}
-	if (is_eating(philosopher))
-	{
-		if (philosopher->started_eating_at + philosopher->time_to_eat < timestamp)
-		{
-			drop_left_fork(philosopher);
-			drop_right_fork(philosopher);
-			philosopher->meals_eaten++;
-			philosopher->started_sleeping_at = get_timestamp();
-			philosopher->state = SLEEPING;
-		}
-	}
-	else if (has_both_forks(philosopher))
-	{
-		philosopher->state = EATING;
-		philosopher->started_eating_at = timestamp;
-	}	
-	else if (is_thinking(philosopher))
-	{
-		if (philosopher->id % 2 == 0)
-		{
-			if (has_left_fork(philosopher))
-				try_right_fork(philosopher);
-			else
-				try_left_fork(philosopher);	
-		}
+		if (has_left_fork(philosopher))
+			try_right_fork(philosopher);
 		else
-		{
-			if (has_right_fork(philosopher))
-				try_left_fork(philosopher);	
-			else
-				try_right_fork(philosopher);
-		}
+			try_left_fork(philosopher);
 	}
-	else if (is_sleeping(philosopher))
+	else
 	{
-		if (philosopher->started_sleeping_at + philosopher->time_to_sleep < timestamp)
-			philosopher->state = THINKING;
+		if (has_right_fork(philosopher))
+			try_left_fork(philosopher);
+		else
+			try_right_fork(philosopher);
 	}
 }
 
-void check_simulation(t_philosopher	**philosophers)
+int	done_sleeping(t_philosopher *philosopher, int timestamp)
 {
-	int nobody_died = TRUE;
-	int goal_reached = FALSE;
-	int philosophers_satisfied = 0;
-	int i;
+	return (timestamp
+			- philosopher->started_state_at >= philosopher->time_to_sleep);
+}
 
+void	update_state(t_philosopher *philosopher)
+{
+	int	timestamp;
+
+	timestamp = get_timestamp();
+	if (should_die(philosopher, timestamp))
+		return (set_state(philosopher, DEAD, timestamp));
+	if (is_thinking(philosopher) && has_both_forks(philosopher))
+		return (set_state(philosopher, EATING, timestamp));
+	if (is_eating(philosopher) && done_eating(philosopher, timestamp))
+	{
+		drop_left_fork(philosopher);
+		drop_right_fork(philosopher);
+		philosopher->meals_eaten++;
+		return (set_state(philosopher, SLEEPING, timestamp));
+	}
+	if (is_sleeping(philosopher) && done_sleeping(philosopher, timestamp))
+		return (set_state(philosopher, THINKING, timestamp));
+	if (is_thinking(philosopher))
+		return (pick_a_fork(philosopher));
+	return ;
+}
+
+void	check_simulation(t_philosopher **philosophers)
+{
+	int	nobody_died;
+	int	goal_reached;
+	int	philosophers_satisfied;
+	int	i;
+
+	nobody_died = TRUE;
+	goal_reached = FALSE;
+	philosophers_satisfied = 0;
 	while (nobody_died && goal_reached == FALSE)
 	{
 		i = 0;
@@ -314,12 +327,15 @@ void check_simulation(t_philosopher	**philosophers)
 		if (philosophers_satisfied == i)
 			goal_reached = TRUE;
 	}
+	if (goal_reached)
+		printf("Everybody is satisfied! 😋\n");
 }
 
-void *simulate_philosopher(void *arg)
+void	*simulate_philosopher(void *arg)
 {
-	t_philosopher	*philosopher = (t_philosopher *)arg;
-	
+	t_philosopher	*philosopher;
+
+	philosopher = (t_philosopher *)arg;
 	while (1)
 	{
 		update_state(philosopher);
@@ -328,14 +344,15 @@ void *simulate_philosopher(void *arg)
 	return (NULL);
 }
 
-void start_simulation(t_philosopher	**philosophers)
+void	start_simulation(t_philosopher **philosophers)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (philosophers[i])
 	{
-		pthread_create(&philosophers[i]->thread, NULL, simulate_philosopher, philosophers[i]);
+		pthread_create(&philosophers[i]->thread, NULL, simulate_philosopher,
+				philosophers[i]);
 		pthread_detach(philosophers[i]->thread);
 		i++;
 	}
@@ -348,11 +365,12 @@ int	main(int argc, char const *argv[])
 	if (argc == 1)
 		return (1);
 	philosophers = init_philosophers(argv);
-	pthread_t display_thread; 
-	pthread_create(&display_thread, NULL, display_log, philosophers);
 	start_simulation(philosophers);
-	pthread_join(display_thread, NULL);
+	check_simulation(philosophers);
 }
 
 // 4 3000 200 300 8
 // cc main.c -Wall -Wextra -Werror && ./a.out 5 410 200 200 8
+
+// Works!
+// cc main.c -Wall -Wextra -Werror && ./a.out 5 500 200 300 10

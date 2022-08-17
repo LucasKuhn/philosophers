@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:36:32 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/08/11 17:18:02 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/08/17 16:27:23 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 # define TRUE 1
 # define FALSE 0
+# define INT_MAX 2147483647
 
 typedef struct s_fork
 {
@@ -31,11 +32,10 @@ typedef struct s_philosopher
 	char			*name;
 	int				id;
 	int				state;
+	int				started_state_at;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				time_to_die;
-	long long		started_eating_at;
-	long long		started_sleeping_at;
 	int				meals_eaten;
 	int				meals_goal;
 	int				holding_left_fork;
