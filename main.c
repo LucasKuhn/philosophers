@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:20:21 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/08/17 17:20:21 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/08/17 22:32:29 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ void	*display_log(void *arg)
 
 void	init_philosopher(t_philosopher *philosopher, const char **argv)
 {
-	philosopher->state = THINKING;
+	philosopher->state = SLEEPING;
 	philosopher->time_to_die = atoi(argv[2]);
 	philosopher->time_to_eat = atoi(argv[3]);
 	philosopher->time_to_sleep = atoi(argv[4]);
@@ -196,25 +196,28 @@ t_philosopher	**init_philosophers(const char **argv)
 void	drop_left_fork(t_philosopher *philosopher)
 {
 	pthread_mutex_lock(&philosopher->left_fork->lock);
-	philosopher->holding_left_fork = FALSE;
 	philosopher->left_fork->locked = FALSE;
 	pthread_mutex_unlock(&philosopher->left_fork->lock);
+	philosopher->holding_left_fork = FALSE;
 }
 
 void	drop_right_fork(t_philosopher *philosopher)
 {
 	pthread_mutex_lock(&philosopher->right_fork->lock);
-	philosopher->holding_right_fork = FALSE;
 	philosopher->right_fork->locked = FALSE;
 	pthread_mutex_unlock(&philosopher->right_fork->lock);
+	philosopher->holding_right_fork = FALSE;
 }
 
 void	try_left_fork(t_philosopher *philosopher)
 {
 	pthread_mutex_lock(&philosopher->right_fork->lock);
 	if (philosopher->left_fork->locked == FALSE)
+	{
+		philosopher->left_fork->locked = TRUE;
 		philosopher->holding_left_fork = TRUE;
-	philosopher->left_fork->locked = TRUE;
+		// print_state(philosopher, get_timestamp());
+	}
 	pthread_mutex_unlock(&philosopher->right_fork->lock);
 }
 
@@ -222,8 +225,11 @@ void	try_right_fork(t_philosopher *philosopher)
 {
 	pthread_mutex_lock(&philosopher->left_fork->lock);
 	if (philosopher->right_fork->locked == FALSE)
+	{
+		philosopher->right_fork->locked = TRUE;
 		philosopher->holding_right_fork = TRUE;
-	philosopher->right_fork->locked = TRUE;
+		// print_state(philosopher, get_timestamp());
+	}
 	pthread_mutex_unlock(&philosopher->left_fork->lock);
 }
 
@@ -260,14 +266,14 @@ void	pick_a_fork(t_philosopher *philosopher)
 {
 	if (philosopher->id % 2 == 0)
 	{
-		if (has_left_fork(philosopher))
+		if (philosopher->holding_left_fork)
 			try_right_fork(philosopher);
 		else
 			try_left_fork(philosopher);
 	}
 	else
 	{
-		if (has_right_fork(philosopher))
+		if (philosopher->holding_right_fork)
 			try_left_fork(philosopher);
 		else
 			try_right_fork(philosopher);
@@ -374,3 +380,6 @@ int	main(int argc, char const *argv[])
 
 // Works!
 // cc main.c -Wall -Wextra -Werror && ./a.out 5 500 200 300 10
+
+// Die
+// cc main.c -Wall -Wextra -Werror && ./a.out 5 410 200 200 8
