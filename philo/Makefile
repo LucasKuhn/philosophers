@@ -2,7 +2,11 @@ NAME	=	philo
 CFLAGS	=	-Wall -Wextra -Werror
 OBJ_DIR	=	obj
 OBJS	=	$(SRCS:%.c=$(OBJ_DIR)/%.o)
-SRCS	=	main.c
+SRCS	=	main.c                  print_state.c \
+create_philosophers.c   philo_eat_utils.c       simulate_philosophers.c \
+fork_utils.c            philo_state_utils.c     update_state.c \
+ft_atoi.c               \
+get_timestamp.c         pick_a_fork.c \
 
 all: $(NAME)
 
