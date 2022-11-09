@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:20:21 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/10/27 13:48:48 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/11/09 15:10:38 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ void	simulation_loop(t_philosopher **philosophers)
 
 	nobody_died = TRUE;
 	goal_reached = FALSE;
-	philosophers_satisfied = 0;
 	while (nobody_died && goal_reached == FALSE)
 	{
+		philosophers_satisfied = 0;
 		i = 0;
 		while (philosophers[i])
 		{
@@ -35,6 +35,7 @@ void	simulation_loop(t_philosopher **philosophers)
 		}
 		if (philosophers_satisfied == i)
 			goal_reached = TRUE;
+		usleep(1000);
 	}
 }
 
@@ -42,7 +43,7 @@ int	main(int argc, char const *argv[])
 {
 	t_philosopher	**philosophers;
 
-	if (argc < 4)
+	if (invalid_args(argc, argv))
 	{
 		printf(USAGE_MSG);
 		return (1);

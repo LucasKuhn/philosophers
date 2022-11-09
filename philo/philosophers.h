@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:16:10 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/10/27 13:47:18 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/11/09 14:34:25 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 # define FALSE 0
 # define INT_MAX 2147483647
 # define USAGE_MSG "Usage: ./philo number_of_philosophers \
-	time_to_die time_to_eat time_to_sleep \
-	[number_of_times_each_philosopher_must_eat]\n"
+time_to_die time_to_eat time_to_sleep \
+[number_of_times_each_philosopher_must_eat]\n"
 
 typedef struct s_fork
 {
@@ -35,12 +35,14 @@ typedef struct s_fork
 typedef struct s_philosopher
 {
 	int				id;
-	int				state;
+	_Atomic int		state;
+	int				program_start_time;
 	int				started_state_at;
+	int				last_meal_at;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				time_to_die;
-	int				meals_eaten;
+	_Atomic int		meals_eaten;
 	int				meals_goal;
 	int				holding_left_fork;
 	int				holding_right_fork;
@@ -74,6 +76,7 @@ int					done_eating(t_philosopher *philosopher, int timestamp);
 // main utils
 t_philosopher		**create_philosophers(const char **argv);
 void				simulate_philosophers(t_philosopher **philosophers);
+int					invalid_args(int argc, char const *argv[]);
 
 // philo state utils
 int					is_thinking(t_philosopher *philosopher);
@@ -83,15 +86,14 @@ int					is_dead(t_philosopher *philosopher);
 int					is_holding_a_fork(t_philosopher *philosopher);
 
 // timestamp
-int					get_timestamp(void);
+int					get_timestamp(int program_start_time);
 
 // update_state
 void				update_state(t_philosopher *philosopher);
 void				print_state(t_philosopher *philosopher, int timestamp);
 
 // fork utils
-void				drop_left_fork(t_philosopher *philosopher);
-void				drop_right_fork(t_philosopher *philosopher);
+void				drop_forks(t_philosopher *philosopher);
 void				pick_a_fork(t_philosopher *philosopher);
 
 #endif

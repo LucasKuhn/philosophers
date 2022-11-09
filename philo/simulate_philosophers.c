@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/20 11:43:10 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/10/27 13:55:25 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/11/09 15:14:11 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,21 +17,37 @@ void	*philosopher_loop(void *arg)
 	t_philosopher	*philosopher;
 
 	philosopher = (t_philosopher *)arg;
-	print_state(philosopher, get_timestamp());
-	if (philosopher->id % 2 == 0)
-		usleep(1000);
-	while (1)
+	print_state(philosopher, get_timestamp(philosopher->program_start_time));
+	usleep(philosopher->id * 250);
+	while (!is_dead(philosopher) && !is_satisfied(philosopher))
 	{
 		update_state(philosopher);
-		usleep(1000);
+		usleep(150);
 	}
 	return (NULL);
+}
+
+void	set_start_time(t_philosopher **philosophers)
+{
+	int				i;
+	int				program_start_time;
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	program_start_time = (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+	i = 0;
+	while (philosophers[i])
+	{
+		philosophers[i]->program_start_time = program_start_time;
+		i++;
+	}
 }
 
 void	simulate_philosophers(t_philosopher **philosophers)
 {
 	int	i;
 
+	set_start_time(philosophers);
 	i = 0;
 	while (philosophers[i])
 	{

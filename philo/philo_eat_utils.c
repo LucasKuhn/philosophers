@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 13:47:57 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/10/27 13:15:39 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/11/09 14:11:08 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	is_satisfied(t_philosopher *philosopher)
 int	should_die(t_philosopher *philosopher, int timestamp)
 {
 	return (timestamp
-		- philosopher->started_state_at >= philosopher->time_to_die);
+		- philosopher->last_meal_at >= philosopher->time_to_die);
 }
 
 int	done_eating(t_philosopher *philosopher, int timestamp)
