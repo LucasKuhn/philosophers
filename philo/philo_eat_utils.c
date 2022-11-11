@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 13:47:57 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/11/09 14:11:08 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/11/10 23:29:15 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,12 @@
 
 int	is_satisfied(t_philosopher *philosopher)
 {
-	return (philosopher->meals_eaten >= philosopher->meals_goal);
+	int	result;
+
+	pthread_mutex_lock(&philosopher->meals_eaten_lock);
+	result = philosopher->meals_eaten >= philosopher->meals_goal;
+	pthread_mutex_unlock(&philosopher->meals_eaten_lock);
+	return (result);
 }
 
 int	should_die(t_philosopher *philosopher, int timestamp)

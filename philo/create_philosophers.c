@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:05:29 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/11/09 15:08:20 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/11/10 15:27:35 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ void	init_philosopher(t_philosopher *philosopher, const char **argv, int nb)
 		philosopher->meals_goal = ft_atoi(argv[5]);
 	else
 		philosopher->meals_goal = INT_MAX;
+	pthread_mutex_init(&philosopher->state_lock, NULL);
+	pthread_mutex_init(&philosopher->meals_eaten_lock, NULL);
 }
 
 void	create_fork(t_philosopher *philosopher)

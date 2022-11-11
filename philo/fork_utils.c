@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 14:00:18 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/11/09 15:13:23 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/11/10 15:25:15 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,4 +32,14 @@ void	drop_forks(t_philosopher *philosopher)
 {
 	drop_left_fork(philosopher);
 	drop_right_fork(philosopher);
+}
+
+int	is_holding_a_fork(t_philosopher *philosopher)
+{
+	return (philosopher->holding_left_fork || philosopher->holding_right_fork);
+}
+
+int	has_both_forks(t_philosopher *philosopher)
+{
+	return (philosopher->holding_left_fork && philosopher->holding_right_fork);
 }

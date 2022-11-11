@@ -6,11 +6,25 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/20 11:43:10 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/11/09 15:14:11 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/11/10 23:34:14 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+int	should_simulate(t_philosopher *philosopher)
+{
+	pthread_mutex_lock(&philosopher->state_lock);
+	if (philosopher->state == DEAD || philosopher->state == SIMULATION_OVER)
+	{
+		pthread_mutex_unlock(&philosopher->state_lock);
+		return (FALSE);
+	}
+	pthread_mutex_unlock(&philosopher->state_lock);
+	if (is_satisfied(philosopher))
+		return (FALSE);
+	return (TRUE);
+}
 
 void	*philosopher_loop(void *arg)
 {
@@ -19,9 +33,9 @@ void	*philosopher_loop(void *arg)
 	philosopher = (t_philosopher *)arg;
 	print_state(philosopher, get_timestamp(philosopher->program_start_time));
 	usleep(philosopher->id * 250);
-	while (!is_dead(philosopher) && !is_satisfied(philosopher))
+	while (should_simulate(philosopher))
 	{
-		update_state(philosopher);
+		check_state_change(philosopher);
 		usleep(150);
 	}
 	return (NULL);
@@ -53,7 +67,7 @@ void	simulate_philosophers(t_philosopher **philosophers)
 	{
 		pthread_create(&philosophers[i]->thread, NULL, philosopher_loop,
 			philosophers[i]);
-		pthread_detach(philosophers[i]->thread);
 		i++;
 	}
+	i = 0;
 }

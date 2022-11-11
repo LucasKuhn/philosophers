@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 13:54:45 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/11/07 15:09:42 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/11/10 23:35:07 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,10 @@ char	*readable_state(t_philosopher *philosopher)
 
 void	print_state(t_philosopher *philosopher, int timestamp)
 {
-	printf("%d %d %s\n",
-		timestamp,
-		philosopher->id,
-		readable_state(philosopher));
+	char	*state;
+
+	state = readable_state(philosopher);
+	pthread_mutex_lock(philosopher->print_lock);
+	printf("%d %d %s\n", timestamp, philosopher->id, state);
+	pthread_mutex_unlock(philosopher->print_lock);
 }

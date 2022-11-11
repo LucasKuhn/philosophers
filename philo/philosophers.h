@@ -6,7 +6,7 @@
 /*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 13:16:10 by lalex-ku          #+#    #+#             */
-/*   Updated: 2022/11/09 14:34:25 by lalex-ku         ###   ########.fr       */
+/*   Updated: 2022/11/10 23:29:20 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,20 +35,23 @@ typedef struct s_fork
 typedef struct s_philosopher
 {
 	int				id;
-	_Atomic int		state;
+	int				state;
+	pthread_mutex_t	state_lock;
 	int				program_start_time;
 	int				started_state_at;
 	int				last_meal_at;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				time_to_die;
-	_Atomic int		meals_eaten;
+	int				meals_eaten;
+	pthread_mutex_t	meals_eaten_lock;
 	int				meals_goal;
 	int				holding_left_fork;
 	int				holding_right_fork;
 	t_fork			*left_fork;
 	t_fork			*right_fork;
 	pthread_t		thread;
+	pthread_mutex_t	*print_lock;
 }					t_philosopher;
 
 typedef enum e_states
@@ -56,10 +59,13 @@ typedef enum e_states
 	THINKING,
 	EATING,
 	SLEEPING,
-	DEAD
+	DEAD,
+	SIMULATION_OVER
 }					t_states;
 
 // state utils
+void				set_state(t_philosopher *philosopher, t_states new_state,
+						int timestamp);
 int					is_thinking(t_philosopher *philosopher);
 int					is_eating(t_philosopher *philosopher);
 int					is_sleeping(t_philosopher *philosopher);
@@ -89,11 +95,12 @@ int					is_holding_a_fork(t_philosopher *philosopher);
 int					get_timestamp(int program_start_time);
 
 // update_state
-void				update_state(t_philosopher *philosopher);
+void				check_state_change(t_philosopher *philosopher);
 void				print_state(t_philosopher *philosopher, int timestamp);
 
 // fork utils
 void				drop_forks(t_philosopher *philosopher);
 void				pick_a_fork(t_philosopher *philosopher);
+int					has_both_forks(t_philosopher *philosopher);
 
 #endif
